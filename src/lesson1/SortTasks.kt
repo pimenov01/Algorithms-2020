@@ -2,6 +2,8 @@
 
 package lesson1
 
+import java.io.File
+
 /**
  * Сортировка времён
  *
@@ -62,8 +64,26 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+/**
+ * трудоемкость O(NlogN) из за вложенной сортировки на 79 строке
+ * ресуркоемкость O(n)
+ */
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    val book = File(inputName).readLines()
+    val regex = Regex("""\S+ \S+ - \S+ \d+""")
+    val regexPart = Regex("""( - )|(?<=\S) (?=\d+)""")
+
+    val addresses = book.asSequence().map {
+        require(it.matches(regex))
+        it.split(regexPart)
+    }.groupBy({ it[1] to it[2].toInt() }, { it[0] }).map { it.key to it.value.sorted() }
+        .sortedWith(compareBy({ it.first.first }, { it.first.second }))
+        .map {
+            "${it.first.first} ${it.first.second} - ${it.second.joinToString(", ")}"
+        }.toList()
+
+    File(outputName).writeText(addresses.joinToString("\n"))
+
 }
 
 /**
