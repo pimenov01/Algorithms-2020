@@ -116,8 +116,14 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+/**
+ * трудоемкость = ресурсоемкость = O(n)
+ */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val temperatures = File(inputName).readLines().map { it.replace(".", "").toInt() + 2730 }.toIntArray()
+    val answer = countingSort(temperatures, 7730).map { (it - 2730).toDouble() / 10 }
+
+    File(outputName).writeText(answer.joinToString("\n"))
 }
 
 /**
