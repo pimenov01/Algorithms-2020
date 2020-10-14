@@ -79,8 +79,68 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      *
      * Средняя
      */
+    //time O(logN)
     override fun remove(element: T): Boolean {
-        TODO()
+
+        fun getPrevious(start: Node<T>): Node<T>? {
+            var actual = root
+            var previous: Node<T>? = null
+            while (actual != null) {
+                val result = actual.value.compareTo(start.value)
+                when {
+                    result > 0 -> {
+                        previous = actual
+                        actual = actual.left
+                    }
+                    result < 0 -> {
+                        previous = actual
+                        actual = actual.right
+                    }
+                    else -> break
+                }
+            }
+            return previous
+        }
+
+        val actual = find(element)
+        if (actual == null || element.compareTo(actual.value) != 0)
+            return false
+        val previous = getPrevious(actual)
+
+        fun replacePrevious(node: Node<T>?) {
+            if (previous == null) {
+                root = node
+            } else {
+                val result = previous.value.compareTo(actual.value)
+                if (result > 0) {
+                    previous.left = node
+                } else if (result < 0) {
+                    previous.right = node
+                }
+            }
+        }
+
+        when {
+            actual.right == null -> replacePrevious(actual.left)
+            actual.right?.left == null -> {
+                actual.right?.left = actual.left
+                replacePrevious(actual.right)
+            }
+            else -> {
+                var leftMost = actual.right?.left
+                var leftMostParent = actual.right
+                while (leftMost?.left != null) {
+                    leftMostParent = leftMost
+                    leftMost = leftMost.left
+                }
+                leftMostParent?.left = leftMost?.right
+                leftMost?.left = actual.left
+                leftMost?.right = actual.right
+                replacePrevious(leftMost)
+            }
+        }
+        size--
+        return true
     }
 
     override fun comparator(): Comparator<in T>? =
@@ -90,6 +150,22 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
+
+        private var current: Node<T>? = null
+        private var stack = Stack<Node<T>>()
+
+        init {
+            toLeft(root)
+        }
+
+        private fun toLeft(node: Node<T>?) {
+            if (node != null) {
+                stack.push(node)
+                toLeft(node.left)
+            }
+
+        }
+
 
         /**
          * Проверка наличия следующего элемента
@@ -101,10 +177,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
-        override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
-        }
+        // time O(1)
+        override fun hasNext(): Boolean = stack.isNotEmpty()
 
         /**
          * Получение следующего элемента
@@ -119,9 +193,13 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
+        //time O(logN)
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            require(hasNext())
+            val node = stack.pop()
+            current = node
+            toLeft(node.right)
+            return node.value
         }
 
         /**
@@ -136,9 +214,11 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Сложная
          */
+        //time O(N)
         override fun remove() {
-            // TODO
-            throw NotImplementedError()
+            check(current != null)
+            remove(current!!.value)
+            current = null
         }
 
     }

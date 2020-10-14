@@ -66,6 +66,7 @@ fun sortTimes(inputName: String, outputName: String) {
  */
 /**
  * трудоемкость O(NlogN) из за вложенной сортировки на 79 строке
+ * и из-за sortedWith()
  * ресуркоемкость O(n)
  */
 fun sortAddresses(inputName: String, outputName: String) {

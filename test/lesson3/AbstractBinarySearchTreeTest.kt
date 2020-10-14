@@ -162,6 +162,22 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+
+        val testTree = KtBinarySearchTree<Int>()
+        testTree.addAll(listOf(1, 2, 4, 3, 65, 7, 5, 3, 1, 56, 6, 46, 36, 2, 643, 6, 36, 2, 51, 35, 6, 346))
+        val height = testTree.height()
+        assertFalse(testTree.remove(0))
+        assertFalse(testTree.remove(1000))
+        assertFalse(testTree.remove(-1))
+        testTree.add(-1)
+        assertTrue(testTree.remove(-1))
+        assertTrue(testTree.remove(1))
+        assertTrue(testTree.remove(6))
+        val newHeight = testTree.height()
+        assertTrue(height != newHeight)
+        assertEquals(height - 1, newHeight)
+
+
     }
 
     protected fun doIteratorTest() {
