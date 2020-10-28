@@ -2,6 +2,8 @@
 
 package lesson7
 
+import kotlin.math.max
+
 /**
  * Наибольшая общая подпоследовательность.
  * Средняя
@@ -14,8 +16,34 @@ package lesson7
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
  */
+// время = память =  О(длина 1 * длина 2)
 fun longestCommonSubSequence(first: String, second: String): String {
-    TODO()
+    if (first == "" || second == "") return ""
+    val a = MutableList(first.length + 1) { IntArray(second.length + 1) }
+    var firstLen = 0
+    var secondLen = 0
+
+    for (i in first.length - 1 downTo 0) {
+        for (j in second.length - 1 downTo 0) {
+            a[i][j] = when {
+                first[i] == second[j] -> a[i + 1][j + 1] + 1
+                else -> max(a[i + 1][j], a[i][j + 1])
+
+            }
+        }
+    }
+
+    return buildString {
+        while (a[firstLen][secondLen] != 0 && firstLen < first.length && secondLen < second.length) {
+            if (first[firstLen] == second[secondLen]) {
+                append(first[firstLen])
+                firstLen++
+                secondLen++
+            } else {
+                if (a[firstLen][secondLen] == a[firstLen + 1][secondLen]) firstLen++ else secondLen++
+            }
+        }
+    }
 }
 
 /**
@@ -30,8 +58,32 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
  */
+// время О(n^2)
+// память О(n)
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    if (list.isEmpty()) return list
+
+    val size = list.size
+    val plusList = MutableList(size) { 1 }
+    val minusList = MutableList(size) { -1 }
+    val result = mutableListOf<Int>()
+
+    for (i in list.indices) {
+        for (j in 0 until i) {
+            if (list[i] > list[j] && plusList[i] < plusList[j] + 1) {
+                plusList[i] = plusList[j] + 1
+                minusList[i] = j
+            }
+        }
+    }
+
+    var maxPos = plusList.indexOf(plusList.max())
+    while (maxPos != -1) {
+        result.add(0, list[maxPos])
+        maxPos = minusList[maxPos]
+    }
+
+    return result
 }
 
 /**

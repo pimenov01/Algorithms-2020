@@ -116,7 +116,9 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
-// time O(vertices + edges)
+// вроде как все перепроверил
+// время О(кол-во вершин + кол-во ребер)
+// память О(кол-во вершин)
 fun Graph.longestSimplePath(): Path {
     val deq = ArrayDeque<Path>()
     var answer = Path()

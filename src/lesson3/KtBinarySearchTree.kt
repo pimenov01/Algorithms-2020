@@ -1,6 +1,7 @@
 package lesson3
 
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.math.max
 
 // attention: Comparable is supported but Comparator is not
@@ -195,7 +196,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          */
         //time O(logN)
         override fun next(): T {
-            require(hasNext())
+            if (stack.isEmpty()) throw NoSuchElementException()
             val node = stack.pop()
             current = node
             toLeft(node.right)
