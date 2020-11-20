@@ -92,8 +92,64 @@ fun Graph.minimumSpanningTree(): Graph {
  *
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
+//трудоемкость = память = О(vertices + edges)
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
-    TODO()
+
+    val link = mutableMapOf<Graph.Vertex, MutableSet<Graph.Vertex>>()
+
+    fun neighbors(vert: Graph.Vertex) {
+        getNeighbors(vert).forEach { link[it]?.remove(vert) }
+    }
+
+    fun cycle(): Boolean {
+        val vertices = vertices.toMutableSet()
+
+        for (vert in vertices) {
+            link[vert] = getNeighbors(vert).toMutableSet()
+        }
+
+        while (vertices.isNotEmpty()) {
+            val i = vertices.iterator()
+            var answer = false
+            while (i.hasNext()) {
+                val next = i.next()
+                if (link[next]!!.size <= 1) {
+                    i.remove()
+                    link.remove(next)
+                    neighbors(next)
+                    answer = true
+                }
+            }
+            if (!answer) return true
+        }
+        return false
+    }
+    require(!cycle())
+
+
+
+    for (vert in vertices) {
+        link[vert] = getNeighbors(vert).toMutableSet()
+    }
+
+    val vertices = vertices.reversed().toMutableSet()
+    var partner = link.maxBy { it.value.size }?.value?.size ?: 0
+
+    while (partner > 0) {
+
+        val deleted = mutableListOf<Graph.Vertex>()
+
+        for (vert in vertices) {
+            if (link[vert]!!.size == partner) {
+                deleted.add(vert)
+                link.remove(vert)
+                neighbors(vert)
+                break
+            }
+        }
+        if (deleted.isEmpty()) partner-- else vertices.removeAll(deleted)
+    }
+    return vertices.toSet()
 }
 
 /**

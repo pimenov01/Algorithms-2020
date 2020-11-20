@@ -59,6 +59,26 @@ abstract class AbstractHeuristicsTests {
         expected.forEach {
             assertTrue(it in vertices, "Voyaging path $vertices must travel through all vertices!")
         }
+        val graph2 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            val f = addVertex("F")
+            addConnection(a, b, 90)
+            addConnection(a, e, 88)
+            addConnection(f, b, 79)
+            addConnection(c, d, 86)
+            addConnection(a, c, 94)
+            addConnection(b, d, 79)
+            addConnection(d, f, 83)
+            addConnection(e, f, 15)
+            addConnection(c, e, 92)
+
+        }.build()
+        val path2 = graph2.findVoyagingPathHeuristics()
+        assertEquals(441, path2.length)
     }
 
 }
